@@ -40,8 +40,6 @@ Vagrant.configure(2) do |config|
     dev.vm.network :forwarded_port, guest: 3389, host: 3390
     dev.vm.network :forwarded_port, guest: 53113, host: 53114
     dev.vm.network :forwarded_port, guest: 2922, host: 2923
-#    dev.vm.network :forwarded_port, guest: 65000, host: 65000
-#    dev.vm.network :forwarded_port, guest: 64000, host: 64000
   end
 
   config.vm.provider "virtualbox" do |vb|
