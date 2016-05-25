@@ -1,0 +1,55 @@
+# -*- mode: ruby -*-
+# vi: set ft=ruby :
+
+
+#if ! File.exists?('./resources/NDP452-KB2901907-x86-x64-AllOS-ENU.exe')
+# puts '.Net 4.5.2 installer could not be found!'
+# puts "Please run:\n  wget http://download.microsoft.com/download/E/2/1/E21644B5-2DF2-47C2-91BD-63C560427900/NDP452-KB2901907-x86-x64-AllOS-ENU.exe"
+# exit 1
+#end
+
+# All Vagrant configuration is done below. The "2" in Vagrant.configure
+# configures the configuration version (we support older styles for
+# backwards compatibility). Please don't change it unless you know what
+# you're doing.
+
+## Windows activation key: 4GGC4-9947F-FWFP3-78P6F-J9HDR
+## http://www.techygeekshome.co.uk/2014/10/windows-server-2008-r2-evaluation.html
+
+## try and publish using copylocal va
+
+
+Vagrant.configure(2) do |config|
+  config.vm.box = "ferventcoder/win2008r2-x64-nocm"
+  config.vm.guest = :windows
+  config.vm.communicator = "winrm"
+
+  config.vm.provision :shell, path: "scripts/download-dotnet-46.ps1"
+  config.vm.provision :shell, path: "scripts/download-sql-server.ps1"
+  config.vm.provision :shell, path: "scripts/download-visual-studio.ps1"
+  config.vm.provision :shell, path: "scripts/install-dot-net.ps1"
+  config.vm.provision :shell, path: "scripts/install-dot-net-46.cmd"
+  config.vm.provision :shell, path: "scripts/install-sql-server.cmd"
+  config.vm.provision :shell, path: "scripts/install-iis.ps1"
+
+  config.vm.boot_timeout = 600
+
+  config.vm.define "dev" do |dev|
+    dev.vm.network "private_network", ip: "192.168.100.110"
+    dev.vm.network :forwarded_port, guest: 5985, host: 5986, id: "winrm", auto_correct: true
+    dev.vm.network :forwarded_port, guest: 3389, host: 3390
+    dev.vm.network :forwarded_port, guest: 53113, host: 53114
+    dev.vm.network :forwarded_port, guest: 2922, host: 2923
+#    dev.vm.network :forwarded_port, guest: 65000, host: 65000
+#    dev.vm.network :forwarded_port, guest: 64000, host: 64000
+  end
+
+  config.vm.provider "virtualbox" do |vb|
+    # Display the VirtualBox GUI when booting the machine
+    # vb.gui = true
+
+    # Customize the amount of memory on the VM:
+    vb.cpus = 2
+    vb.memory = 9000
+  end
+end
